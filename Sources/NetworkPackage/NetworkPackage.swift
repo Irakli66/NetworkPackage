@@ -1,5 +1,15 @@
 import Foundation
 
+public protocol NetworkServiceProtocol {
+    func fetchData<T: Decodable>(
+        urlString: String,
+        httpMethod: String,
+        headers: [String: String]?,
+        decoder: JSONDecoder,
+        completion: @escaping @Sendable (Result<T, NetworkError>) -> Void
+    )
+}
+
 public enum NetworkError: Error {
     case invalidURL
     case invalidResponse
@@ -8,7 +18,7 @@ public enum NetworkError: Error {
     case noData
 }
 
-public final class NetworkService {
+public final class NetworkService: NetworkServiceProtocol {
     
     public init() {}
     
