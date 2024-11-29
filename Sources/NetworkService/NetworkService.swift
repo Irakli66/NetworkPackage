@@ -27,7 +27,7 @@ public enum NetworkError: Error {
     case requestError(Error)
 }
 
-@available(macOS 12.0, *)
+@available(macOS 12.0, iOS 16.0, *)
 public final class NetworkService: NetworkServiceProtocol {
     public init() {}
     
