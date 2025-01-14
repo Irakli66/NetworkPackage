@@ -15,7 +15,7 @@ public protocol NetworkServiceProtocol {
         headers: [String: String]?,
         body: Data?,
         decoder: JSONDecoder
-    ) async throws -> T
+    ) async throws -> T?
 }
 
 public enum NetworkError: Error {
@@ -37,7 +37,7 @@ public final class NetworkService: NetworkServiceProtocol {
         headers: [String: String]? = nil,
         body: Data? = nil,
         decoder: JSONDecoder = JSONDecoder()
-    ) async throws -> T {
+    ) async throws -> T? {
         guard let url = URL(string: urlString) else {
             throw NetworkError.invalidURL
         }
@@ -51,10 +51,8 @@ public final class NetworkService: NetworkServiceProtocol {
             }
         }
         
-        if let body = body,
-           [.post, .put, .patch].contains(method) {
+        if let body = body, [.post, .put, .patch].contains(method) {
             urlRequest.httpBody = body
-            
             if urlRequest.value(forHTTPHeaderField: "Content-Type") == nil {
                 urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
             }
@@ -69,6 +67,10 @@ public final class NetworkService: NetworkServiceProtocol {
             
             guard (200...299).contains(httpResponse.statusCode) else {
                 throw NetworkError.httpError(statusCode: httpResponse.statusCode)
+            }
+            
+            if data.isEmpty {
+                return nil
             }
             
             do {
