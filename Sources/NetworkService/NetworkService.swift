@@ -18,13 +18,30 @@ public protocol NetworkServiceProtocol {
     ) async throws -> T?
 }
 
-public enum NetworkError: Error {
+public enum NetworkError: Error, LocalizedError {
     case invalidURL
     case invalidResponse
     case httpError(statusCode: Int)
     case decodingError(Error)
     case noData
     case requestError(Error)
+    
+    public var errorDescription: String? {
+        switch self {
+        case .invalidURL:
+            return "The URL provided was invalid."
+        case .invalidResponse:
+            return "The response from the server was invalid."
+        case .httpError(let statusCode):
+            return "HTTP error occurred with status code: \(statusCode)."
+        case .decodingError(let error):
+            return "Decoding error occurred: \(error.localizedDescription)"
+        case .noData:
+            return "No data was received from the server."
+        case .requestError(let error):
+            return "A network request error occurred: \(error.localizedDescription)"
+        }
+    }
 }
 
 @available(macOS 12.0, iOS 16.0, *)
